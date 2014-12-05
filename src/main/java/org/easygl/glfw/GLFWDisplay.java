@@ -76,7 +76,6 @@ public class GLFWDisplay
         
         //set default values to all windows hints
         glfwDefaultWindowHints();
-        this.setVisibility(visible);
         this.setResizeable(resizeable);
         
         if (isFullScreen)
