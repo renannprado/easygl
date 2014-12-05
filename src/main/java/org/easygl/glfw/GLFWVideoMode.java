@@ -14,6 +14,7 @@ public class GLFWVideoMode
     public final int redBits;
     public final int greenBits;
     public final int blueBits;
+    public final int refreshRate;
     
     public GLFWVideoMode(ByteBuffer videoMode)
     {
@@ -22,6 +23,7 @@ public class GLFWVideoMode
         this.redBits = GLFWvidmode.redBits(videoMode);
         this.greenBits = GLFWvidmode.greenBits(videoMode);
         this.blueBits = GLFWvidmode.blueBits(videoMode);
+        this.refreshRate = GLFWvidmode.refreshRate(videoMode);
     }
 
     public int getHeight() {
@@ -42,5 +44,9 @@ public class GLFWVideoMode
 
     public int getBlueBits() {
         return blueBits;
+    }
+
+    public int getRefreshRate() {
+        return refreshRate;
     }
 }
