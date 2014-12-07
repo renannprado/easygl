@@ -11,14 +11,14 @@
             <artifactId>lwjgl</artifactId>
             <version>3.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/res/lib/lwjgl/jar/lwjgl-3.0.jar</systemPath>
+            <systemPath>${project.basedir}/libs/lwjgl/jar/lwjgl-3.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>disruptor</artifactId>
             <version>3.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/res/lib/lwjgl/jar/disruptor-3.0.jar</systemPath>
+            <systemPath>${project.basedir}/libs/lwjgl/jar/disruptor-3.0.jar</systemPath>
         </dependency>
     </dependencies>
     <properties>
