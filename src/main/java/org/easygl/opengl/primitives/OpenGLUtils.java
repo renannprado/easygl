@@ -22,10 +22,4 @@ public class OpenGLUtils
     {
         return GL15.glGenBuffers();
     }
-    
-    /**
-     * 
-     * @param vaoID 
-     */
-//    static void storeDataIntoVertexArrayObject(int vaoID, int)
 }
