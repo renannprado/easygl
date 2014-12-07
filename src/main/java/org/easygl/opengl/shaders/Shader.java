@@ -51,9 +51,7 @@ public class Shader
         {
             StringBuilder shaderSourceCode = new StringBuilder();
             
-            br.lines().parallel().forEach(s -> shaderSourceCode.append(s).append('\n'));            
-            
-            System.out.println(shaderSourceCode.toString());
+            br.lines().parallel().forEach(s -> shaderSourceCode.append(s).append('\n'));
             
             return internal_loadShader(shaderSourceCode, shaderType);
         }
