@@ -1,6 +1,6 @@
 package org.easygl.opengl.primitives;
 
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import org.lwjgl.opengl.GL15;
 
 /**
  *
@@ -8,7 +8,8 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
  */
 public enum VertexBufferType 
 {
-    ARRAY_BUFFER(GL_ARRAY_BUFFER);
+    ARRAY_BUFFER(GL15.GL_ARRAY_BUFFER),
+    ELEMENT_ARRAY_BUFFER(GL15.GL_ELEMENT_ARRAY_BUFFER);
     
     private final int typeValue;
     

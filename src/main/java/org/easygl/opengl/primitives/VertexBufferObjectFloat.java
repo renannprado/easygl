@@ -36,7 +36,7 @@ public class VertexBufferObjectFloat extends AbstractVertexBufferObject<FloatBuf
     }
 
     @Override
-    public int getVertexQuantity() 
+    public int getDataElementsQuantity() 
     {
         return this.vertexQuantity;
     }

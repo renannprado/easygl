@@ -8,7 +8,8 @@ import org.lwjgl.opengl.GL11;
  */
 public enum VertexBufferDataType 
 {
-    FLOAT(GL11.GL_FLOAT);
+    FLOAT(GL11.GL_FLOAT),
+    INTEGER(GL11.GL_INT);
     
     private final int typeValue;
     

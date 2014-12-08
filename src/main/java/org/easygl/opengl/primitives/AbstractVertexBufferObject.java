@@ -29,7 +29,7 @@ public abstract class AbstractVertexBufferObject<T extends Buffer>
     }
     
     protected abstract void storeData();
-    public abstract int getVertexQuantity();
+    public abstract int getDataElementsQuantity();
     
     public int getId() 
     {

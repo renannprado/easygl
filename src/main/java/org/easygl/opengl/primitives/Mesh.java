@@ -36,7 +36,7 @@ public class Mesh extends AbstractDrawableComponent
         {
             AbstractVertexBufferObject<?> vbo = this.vertexArrayObject.vertexBufferObejctList.get(i);
             GL20.glEnableVertexAttribArray(vbo.getAttributeID());
-            GL11.glDrawArrays(this.meshType.getTypeValue(), 0, vbo.getVertexQuantity());
+            GL11.glDrawArrays(this.meshType.getTypeValue(), 0, vbo.getDataElementsQuantity());
             GL20.glDisableVertexAttribArray(vbo.getAttributeID());
         }
     }
