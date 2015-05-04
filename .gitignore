@@ -1,2 +1,5 @@
 /target/
 /libs/lwjgl/
+/nbproject/private/
+/build/
+/dist/

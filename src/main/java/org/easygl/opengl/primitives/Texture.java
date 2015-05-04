@@ -26,7 +26,7 @@ public class Texture
         this.pixelWidth = pixelWidth;        
         this.pixelHeight = pixelHeight;
         
-        GL11.glTexImage2D();
+//        GL11.glTexImage2D();
     }
     
     public static Texture loadTexture(final String filePath)
@@ -51,6 +51,4 @@ public class Texture
             throw new RuntimeException(String.format("Failed to load image %s.", filePath), ex);
         }
     }
-    
-    public
 }

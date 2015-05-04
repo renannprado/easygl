@@ -1,52 +1,64 @@
 package org.easygl.glfw;
 
+import com.sun.scenario.effect.Effect;
+import org.lwjgl.glfw.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
+import org.lwjgl.opengl.GLContext;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import org.lwjgl.system.glfw.ErrorCallback;
-import static org.lwjgl.system.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.system.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.system.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.system.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.system.glfw.GLFW.glfwCreateWindow;
-import static org.lwjgl.system.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.system.glfw.GLFW.glfwDestroyWindow;
-import static org.lwjgl.system.glfw.GLFW.glfwGetPrimaryMonitor;
-import static org.lwjgl.system.glfw.GLFW.glfwGetVideoMode;
-import static org.lwjgl.system.glfw.GLFW.glfwInit;
-import static org.lwjgl.system.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.system.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.system.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.system.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.system.glfw.GLFW.glfwSetWindowSize;
-import static org.lwjgl.system.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.system.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.system.glfw.GLFW.glfwSwapInterval;
-import static org.lwjgl.system.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.system.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.system.glfw.GLFW.glfwWindowShouldClose;
-import org.lwjgl.system.glfw.WindowCallback;
-import org.lwjgl.system.glfw.WindowCallbackAdapter;
 
 /**
  *
  * @author Renann
  */
-public class GLFWDisplay
+public class GLFWWindow
 {
     /**
      * A simple call back that just checks wheter the user has pressed ESC and if so, it calls glfwSetWindowShouldClose
      */
-    public static final WindowCallbackAdapter defaultWindowCallbackAdapter = new WindowCallbackAdapter() 
+    public static final GLFWKeyCallback defaultGLFWKeyCallback = new GLFWKeyCallback() 
     {
         @Override
-        public void key(long window, int key, int scancode, int action, int mods) 
+        public void invoke(long window, int key, int scancode, int action, int mods) 
         {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                 glfwSetWindowShouldClose(window, GL_TRUE);
         }
     };
     
+    public static final GLFWErrorCallback defaultGLFWErrorCallback = new GLFWErrorCallback() {
+
+        @Override
+        public void invoke(int error, long description) 
+        {
+            System.err.println(org.lwjgl.system.MemoryUtil.memDecodeUTF8(description));
+        }
+    };
+    
+    /**
+     * The window's memory address, window's handle or window's pointer
+     */
     private long windowMemoryAddress;
     private String windowTitle;
     private boolean resizeable;
@@ -55,17 +67,19 @@ public class GLFWDisplay
     private int windowHeight;
     private boolean vSync;
     private long monitorMemoryAddress;
+    private GLFWKeyCallback glfwKeyCallbackInstance;
     
-    public GLFWDisplay(int windowWidth, int windowHeight, String windowTitle, boolean isResizeable, boolean isFullScreen, boolean vSync)
+    public GLFWWindow(int windowWidth, int windowHeight, String windowTitle, boolean isResizeable, boolean isFullScreen, boolean vSync)
     {
         this.windowTitle = windowTitle;
         this.resizeable = isResizeable;
         this.windowHeight = windowHeight;
         this.windowWidth = windowWidth;
-        this.vSync = vSync;       
+        this.vSync = vSync; 
+        this.glfwKeyCallbackInstance = null;
         
         //set the default callback for error handling in GLFW
-        glfwSetErrorCallback(ErrorCallback.Util.getDefault());
+        glfwSetErrorCallback(org.lwjgl.glfw.Callbacks.errorCallbackPrint());
         
         //init the GLFW library
         if (glfwInit() != GL_TRUE) 
@@ -76,12 +90,13 @@ public class GLFWDisplay
         
         //set default values to all windows hints
         glfwDefaultWindowHints();
+        
         this.setResizeable(resizeable);
         
         if (isFullScreen)
             this.windowMemoryAddress = glfwCreateWindow(this.windowWidth, this.windowHeight, this.windowTitle, this.monitorMemoryAddress, NULL); //creates a full screen display
         else
-            this.windowMemoryAddress = glfwCreateWindow(this.windowWidth, this.windowHeight, this.windowTitle, NULL, NULL); //creates a windowed display
+            this.windowMemoryAddress = glfwCreateWindow(this.windowWidth, this.windowHeight, this.windowTitle, NULL, NULL); //creates the window in windowed mode
         
         if (this.windowMemoryAddress == NULL) 
             throw new IllegalStateException("Failed to create window");
@@ -110,12 +125,14 @@ public class GLFWDisplay
         this.resizeable = resizeable;
     }
     
-    public final void setWindowCallbackadapter(WindowCallbackAdapter windowCallbackAdapter)
+    public final void setGLFWKeyCallback(GLFWKeyCallback glfwKeyCallbackInstance)
     {
-        if (windowCallbackAdapter == null)
+        if (glfwKeyCallbackInstance == null)
             throw new NullPointerException("windowCallbackAdapter");
         
-        WindowCallback.set(this.windowMemoryAddress, windowCallbackAdapter);
+        this.glfwKeyCallbackInstance = glfwKeyCallbackInstance;
+        
+        GLFW.glfwSetKeyCallback(this.windowMemoryAddress, this.glfwKeyCallbackInstance);
     }
 
     public String getWindowTitle() {
@@ -177,5 +194,10 @@ public class GLFWDisplay
     {
         glfwPollEvents();
     }
+    
+    public GLContext createContextFromCurrent()
+    {
+        glfwMakeContextCurrent(this.windowMemoryAddress);
+        return GLContext.createFromCurrent();
+    }
 }
-

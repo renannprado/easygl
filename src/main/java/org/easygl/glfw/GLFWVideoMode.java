@@ -1,7 +1,7 @@
 package org.easygl.glfw;
 
 import java.nio.ByteBuffer;
-import org.lwjgl.system.glfw.GLFWvidmode;
+import org.lwjgl.glfw.GLFWvidmode;
 
 /**
  *
